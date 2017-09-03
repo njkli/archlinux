@@ -1,8 +1,8 @@
 # -*- shell-script -*-
 
 post_upgrade() {
-	if usr/bin/pacman-key -l >/dev/null 2>&1; then
-		usr/bin/pacman-key --populate njkli
+	if /usr/bin/pacman-key -l >/dev/null 2>&1; then
+		/usr/bin/pacman-key --populate njkli
 	else
 		echo " >>> Run \`pacman-key --init\` to set up your pacman keyring."
 		echo " >>> Then run \`pacman-key --populate njkli\` to install the SwagArch keyring."
@@ -10,7 +10,7 @@ post_upgrade() {
 }
 
 post_install() {
-	if [ -x usr/bin/pacman-key ]; then
+	if [ -x /usr/bin/pacman-key ]; then
 		post_upgrade
 	fi
 }
