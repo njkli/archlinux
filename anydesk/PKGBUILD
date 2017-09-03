@@ -1,0 +1,37 @@
+# Maintainer:  <voobscout@archlinux.info>
+
+pkgname=anydesk-bin
+_pkgname=anydesk
+pkgver=2.9.4
+pkgrel=1
+pkgdesc="Hypervisor-agnostic Docker Runtime (boot files)"
+arch=('x86_64')
+url="https://www.hypercontainer.io/"
+license=('Apache')
+# depends=('libvirt' 'device-mapper')
+conflicts=('hyperstart')
+source=("https://download.anydesk.com/linux/${_pkgname}_${pkgver}-${pkgrel}_amd64.deb")
+sha256sums=('394014cbc1d9ff1a9674f9fd43df4335f92a856880d2911557bd261750c0c5e4')
+noextract=("${source[@]##*/}")
+
+prepare() {
+  for i in $(ls *.deb); do ar p $i data.tar.gz | tar xvz && rm -rf $i ; done
+}
+
+package() {
+  install -Dm644 ${srcdir}/etc/xdg/autostart/anydesk.desktop ${pkgdir}/etc/xdg/autostart/anydesk.desktop
+  install -Dm644 ${srcdir}/usr/share/menu/anydesk ${pkgdir}/usr/share/menu/anydesk
+  install -Dm644 ${srcdir}/usr/share/applications/anydesk.desktop ${pkgdir}/usr/share/applications/anydesk.desktop
+  install -Dm644 ${srcdir}/usr/share/icons/hicolor/scalable/apps/anydesk.svg ${pkgdir}/usr/share/icons/hicolor/scalable/apps/anydesk.svg
+  install -Dm644 ${srcdir}/usr/share/icons/hicolor/32x32/apps/anydesk.png ${pkgdir}/usr/share/icons/hicolor/32x32/apps/anydesk.png
+  install -Dm644 ${srcdir}/usr/share/icons/hicolor/24x24/apps/anydesk.png ${pkgdir}/usr/share/icons/hicolor/24x24/apps/anydesk.png
+  install -Dm644 ${srcdir}/usr/share/icons/hicolor/16x16/apps/anydesk.png ${pkgdir}/usr/share/icons/hicolor/16x16/apps/anydesk.png
+  install -Dm644 ${srcdir}/usr/share/icons/hicolor/256x256/apps/anydesk.png ${pkgdir}/usr/share/icons/hicolor/256x256/apps/anydesk.png
+  install -Dm644 ${srcdir}/usr/share/icons/hicolor/48x48/apps/anydesk.png ${pkgdir}/usr/share/icons/hicolor/48x48/apps/anydesk.png
+  install -Dm644 ${srcdir}/usr/share/doc/anydesk/copyright ${pkgdir}/usr/share/doc/anydesk/copyright
+  install -Dm644 ${srcdir}/usr/share/pixmaps/anydesk.png ${pkgdir}/usr/share/pixmaps/anydesk.png
+  install -Dm644 ${srcdir}/usr/share/pixmaps/anydesk.xpm ${pkgdir}/usr/share/pixmaps/anydesk.xpm
+  install -Dm644 ${srcdir}/usr/share/man/man1/anydesk.1.gz ${pkgdir}/usr/share/man/man1/anydesk.1.gz
+
+  install -Dm755 ${srcdir}/usr/bin/anydesk ${pkgdir}/usr/bin/anydesk
+}

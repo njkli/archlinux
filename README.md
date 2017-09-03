@@ -26,3 +26,6 @@ EOL
 
 sudo pacman -Syyu
 ```
+
+## Packages
+  * anydesk
