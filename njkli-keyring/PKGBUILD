@@ -1,0 +1,26 @@
+# Based on the file created for Arch Linux by:
+# Pierre Schmitz <pierre@archlinux.de>
+
+# Maintainer:  <voobscout@archlinux.info>
+
+pkgname=njkli-keyring
+pkgver=20170902
+pkgrel=1
+pkgdesc='njkli PGP keyring'
+arch=('any')
+url='https://github.com/njkli/aur/njkli-keyring'
+license=('GPL')
+install="${pkgname}.install"
+source=('Makefile'
+        'njkli.gpg'
+        'njkli-revoked'
+        'njkli-trusted')
+sha256sums=('4734002ffafcd98d655c87833a07101940e11a8b4bc045c1af4fb1fbde6863ea'
+            '82d9fe5ba8acf920b9bb121786ce7d2407f1b5a36ab1368b94f5ae503b5d9240'
+            'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+            '0513994772f22701d56aac844b3ea64ae0e8723d1137a45995fb0020a3808b60')
+
+package() {
+	cd "${srcdir}"
+	make PREFIX=/usr DESTDIR=${pkgdir} install
+}
