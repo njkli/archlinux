@@ -1,0 +1,44 @@
+# Maintainer:  <vod@z.0.njk.li>
+pkgname=kubernetes-stable
+pkgver=1.7.0
+pkgrel=2
+pkgdesc="kubernetes for armv7h"
+arch=('armv7h')
+url="http://kubernetes.io"
+license=('apache')
+conflicts=('kubernetes')
+provides=('kubernetes-stable')
+makedepends=('binutils')
+depends=('ebtables' 'ethtool')
+install=kubeadm.install
+source=('https://packages.cloud.google.com/apt/pool/kubernetes-cni_0.5.1-00_armhf_fb09ef6b6b36467b001317be28691e835f6009ea46207c005748c8bd63e24815.deb'
+        'https://packages.cloud.google.com/apt/pool/kubelet_1.7.0-00_armhf_4ba3a672ad5320962e6f492a76c1c98761a87f23bcdb471fde7e4f742cc96d25.deb'
+        'https://packages.cloud.google.com/apt/pool/kubectl_1.7.0-00_armhf_b24b6fc9deac2b7463d1dbfc3fba50e06a9145895d232c0c4763c7b515f43d2c.deb'
+        'https://packages.cloud.google.com/apt/pool/kubeadm_1.7.0-00_armhf_6be6b375dc79b423959442e24ee0415d8fdd2e49f333bf83cf89c42b0cc73e1b.deb')
+sha256sums=('fb09ef6b6b36467b001317be28691e835f6009ea46207c005748c8bd63e24815'
+            '4ba3a672ad5320962e6f492a76c1c98761a87f23bcdb471fde7e4f742cc96d25'
+            'b24b6fc9deac2b7463d1dbfc3fba50e06a9145895d232c0c4763c7b515f43d2c'
+            '6be6b375dc79b423959442e24ee0415d8fdd2e49f333bf83cf89c42b0cc73e1b')
+noextract=("${source[@]##*/}")
+
+prepare() {
+  for i in $(ls *.deb); do ar p $i data.tar.xz | tar xvJ && rm -rf $i ; done
+}
+
+package() {
+  cd $srcdir
+  mkdir -p $pkgdir/opt/cni/bin
+  mkdir -p $pkgdir/etc/systemd/system/kubelet.service.d
+  # # CNI
+  cd $srcdir/opt/cni/bin
+  for i in $(ls $srcdir/opt/cni/bin); do install -Dm 0755 $i $pkgdir/opt/cni/bin/$i; done
+  cd $srcdir
+  # kubelet
+  install -Dm 0644 $srcdir/lib/systemd/system/kubelet.service $pkgdir/usr/lib/systemd/system/kubelet.service
+  install -Dm 0755 $srcdir/usr/bin/kubelet $pkgdir/usr/bin/kubelet
+  # kubectl
+  install -Dm 0755 $srcdir/usr/bin/kubectl $pkgdir/usr/bin/kubectl
+  # kubeadm
+  install -Dm 0644 $srcdir/etc/systemd/system/kubelet.service.d/10-kubeadm.conf $pkgdir/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+  install -Dm 0755 $srcdir/usr/bin/kubeadm $pkgdir/usr/bin/kubeadm
+}

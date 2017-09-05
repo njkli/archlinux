@@ -1,0 +1,51 @@
+# Maintainer:  <voobscout@archlinux.info>
+
+pkgname=hyperd
+pkgver=r1082.f2200c8
+pkgrel=1
+pkgdesc="Hypervisor-agnostic Docker Runtime"
+arch=('x86_64')
+url="https://www.hypercontainer.io/"
+license=('Apache')
+depends=('libvirt' 'device-mapper')
+makedepends=('device-mapper' 'sqlite3' 'libvirt' 'git' 'godep' 'go')
+optdepends=('hyperstart')
+options=('!strip' '!emptydirs')
+source=("git+https://github.com/hyperhq/${pkgname}.git#branch=master")
+sha256sums=('SKIP')
+
+prepare() {
+  ## Set a working golang environment
+  ## see https://golang.org/doc/code.html
+  export GOPATH="$srcdir"
+  export PATH=$PATH:$GOPATH/bin
+  export _build_path="$GOPATH/src/github.com/hyperhq"
+  export _PKGPATH="$_build_path/$pkgname"
+
+  mkdir -p "$_build_path"
+  ln -si "$srcdir/$pkgname" "$_PKGPATH"
+}
+
+pkgver() {
+  cd "$_PKGPATH"
+  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+  cd "$_PKGPATH"
+  ./autogen.sh
+  ./configure --with-libvirt --without-btrfs
+  make
+}
+
+package() {
+  cd "$_PKGPATH"
+
+  install -D -m755 vmlogd "${pkgdir}/usr/bin/vmlogd"
+  install -D -m755 hyperctl "${pkgdir}/usr/bin/hyperctl"
+  install -D -m755 hyperd "${pkgdir}/usr/bin/hyperd"
+
+  install -D -m644 package/dist/etc/hyper/config "${pkgdir}/etc/hyper/config"
+  install -D -m644 package/dist/lib/systemd/system/hyperd.service "${pkgdir}/usr/lib/systemd/system/hyperd.service"
+  install -D -m644 package/dist/lib/systemd/system/hyper-vmlogd.service "${pkgdir}/usr/lib/systemd/system/hyper-vmlogd.service"
+}

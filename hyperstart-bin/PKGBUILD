@@ -1,0 +1,26 @@
+# Maintainer:  <voobscout@archlinux.info>
+
+pkgname=hyperstart-bin
+_pkgname=hyperstart
+pkgver=0.8.1
+pkgrel=1
+pkgdesc="Hypervisor-agnostic Docker Runtime (boot files)"
+arch=('x86_64')
+url="https://www.hypercontainer.io/"
+license=('Apache')
+# depends=('libvirt' 'device-mapper')
+conflicts=('hyperstart')
+source=("https://hypercontainer-download.s3-us-west-1.amazonaws.com/0.8/debian/${_pkgname}_${pkgver}-${pkgrel}_amd64.deb")
+sha256sums=('4534c50e4d2123e4c80b04eda1e0f4bab163325bbd725a3c5f420b5dd2498b1d')
+noextract=("${source[@]##*/}")
+
+prepare() {
+  for i in $(ls *.deb); do ar p $i data.tar.xz | tar xvJ && rm -rf $i ; done
+}
+
+package() {
+  mkdir -p "${pkgdir}/var/lib/hyper"
+
+  install -D -m644 "${srcdir}/var/lib/hyper/hyper-initrd.img" "${pkgdir}/var/lib/hyper/hyper-initrd.img"
+  install -D -m644 "${srcdir}/var/lib/hyper/kernel" "${pkgdir}/var/lib/hyper/kernel"
+}
