@@ -1,0 +1,31 @@
+# Maintainer:  <voobscout@archlinux.info>
+
+pkgname=wayk-now-bin
+_pkgname=wayk-now
+pkgver=1.3.0
+pkgrel=1
+pkgdesc="'AnyDeskwayk-now Free' is an All-In-One Software for Remote Support"
+arch=('x86_64')
+depends=('libappindicator-gtk2')
+url="https://wayk.devolutions.net"
+source=("http://pkg.wayk.net/debian/pool/main/w/${_pkgname}/${_pkgname}_${pkgver}_amd64.deb")
+sha256sums=('SKIP')
+noextract=("${source[@]##*/}")
+
+prepare() {
+  for i in $(ls *.deb); do ar p $i data.tar.xz | tar xJ && rm -rf $i ; done
+}
+
+package() {
+  mkdir -p ${pkgdir}/usr/share/applications
+  mkdir -p ${pkgdir}/usr/share/polkit-1/actions
+  mkdir -p ${pkgdir}/usr/share/wayk-now
+
+  install -Dm0644 ${srcdir}/usr/share/applications/wayk-now.desktop ${pkgdir}/usr/share/applications/wayk-now.desktop
+  install -Dm0644 ${srcdir}/usr/share/polkit-1/actions/net.devolutions.wayk.policy ${pkgdir}/usr/share/polkit-1/actions/net.devolutions.wayk.policy
+
+  install -Dm0644 ${srcdir}/usr/share/wayk-now/WaykNow.png ${pkgdir}/usr/share/wayk-now/WaykNow.png
+
+  install -Dm0755 ${srcdir}/usr/bin/wayk-now ${pkgdir}/usr/bin/wayk-now
+}
+# vim:set ts=2 sw=2 et:
